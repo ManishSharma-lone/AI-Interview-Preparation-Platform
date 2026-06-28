@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Prep - Professional Portfolio Platform</title>
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- ==================== AUTHENTICATION CONTAINER ==================== -->
+    <div id="auth-screen" class="auth-container">
+        <div class="glass-panel auth-card">
+            <div class="auth-logo">
+                <i data-lucide="cpu" style="display:inline-block; vertical-align:middle; margin-right:8px;"></i>
+                AI Interview Prep
+            </div>
+            
+            <div class="auth-tabs">
+                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form-el" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email Address</label>
+                    <input type="email" id="login-email" class="glass-input" required placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input type="password" id="login-password" class="glass-input" required placeholder="••••••••">
+                </div>
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem;">
+                    <input type="checkbox" id="login-remember" style="accent-color: var(--primary);">
+                    <label class="form-label" for="login-remember" style="margin-bottom: 0; cursor: pointer;">Remember me for 7 days</label>
+                </div>
+                <button type="submit" class="glass-button auth-submit-btn">
+                    Sign In
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Register Form (Hidden by default) -->
+            <form id="register-form-el" onsubmit="handleRegister(event)" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label" for="reg-username">Full Name / Username</label>
+                    <input type="text" id="reg-username" class="glass-input" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" class="glass-input" required placeholder="name@company.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="reg-password">Password</label>
+                    <input type="password" id="reg-password" class="glass-input" required placeholder="Min. 6 characters">
+                </div>
+                <button type="submit" class="glass-button auth-submit-btn">
+                    Create Account
+                    <i data-lucide="user-plus"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN APPLICATION APP SHELL ==================== -->
+    <div id="app-shell" class="app-shell" style="display: none;">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i data-lucide="terminal" style="color: var(--primary);"></i>
+                AI-Interviewer
+            </div>
+            
+            <nav class="nav-menu">
+                <li id="nav-dashboard" class="nav-item active" onclick="switchView('dashboard')">
+                    <i data-lucide="layout-dashboard"></i>
+                    Dashboard
+                </li>
+                <li id="nav-interview" class="nav-item" onclick="switchView('interview')">
+                    <i data-lucide="play-circle"></i>
+                    Start Interview
+                </li>
+                <li id="nav-history" class="nav-item" onclick="switchView('history')">
+                    <i data-lucide="history"></i>
+                    History
+                </li>
+                <li id="nav-leaderboard" class="nav-item" onclick="switchView('leaderboard')">
+                    <i data-lucide="trophy"></i>
+                    Leaderboard
+                </li>
+            </nav>
+
+            <!-- User Brief & Logout -->
+            <div class="user-profile-section">
+                <div class="user-info-brief">
+                    <span id="profile-username" class="username-label">Candidate</span>
+                    <span id="profile-email" class="email-label">candidate@ai.com</span>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()" title="Log out">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Pane -->
+        <main class="content-wrapper">
+
+            <!-- ==================== DASHBOARD VIEW ==================== -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Welcome Candidate</h1>
+                        <p style="color: var(--text-secondary); margin-top: 0.25rem;">Track your growth and progress targets here.</p>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="glass-panel metric-card">
+                        <div class="metric-title">Total Interviews</div>
+                        <div id="stat-total-interviews" class="metric-value">0</div>
+                        <div class="metric-subtitle">Interviews evaluated</div>
+                    </div>
+                    <div class="glass-panel metric-card">
+                        <div class="metric-title">Average Score</div>
+                        <div id="stat-avg-score" class="metric-value">0.0</div>
+                        <div class="metric-subtitle">Out of 10 maximum</div>
+                    </div>
+                    <div class="glass-panel metric-card">
+                        <div class="metric-title">Best Score</div>
+                        <div id="stat-best-score" class="metric-value">0.0</div>
+                        <div class="metric-subtitle">Personal best score</div>
+                    </div>
+                    <div class="glass-panel metric-card">
+                        <div class="metric-title">Streaks & Progress</div>
+                        <div id="stat-streak" class="metric-value">0 Days</div>
+                        <div id="stat-today-progress" class="metric-indicator">
+                            <i data-lucide="zap" style="width:14px; height:14px;"></i>
+                            0 Done Today
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Row Split -->
+                <div class="dashboard-row-split">
+                    <!-- Graph Placeholder Panel -->
+                    <div class="glass-panel chart-panel">
+                        <h3 class="topic-group-title" style="color: var(--text-primary);">
+                            <i data-lucide="trending-up" style="color: var(--primary);"></i>
+                            Recent Interview Progression
+                        </h3>
+                        <div style="flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:0.5rem; color:var(--text-muted);">
+                            <i data-lucide="bar-chart-3" style="width: 48px; height: 48px; stroke-width: 1.5; color: var(--primary);"></i>
+                            <p style="font-size:0.85rem; margin-top:0.5rem;">Visual progress updates with each finished session</p>
+                        </div>
+                    </div>
+
+                    <!-- Topic Analysis List -->
+                    <div class="glass-panel topics-panel">
+                        <h3 class="topic-group-title" style="color: var(--text-primary);">
+                            <i data-lucide="pie-chart" style="color: var(--accent-cyan);"></i>
+                            Topic Analytics
+                        </h3>
+                        <div class="topic-list-container">
+                            <div class="topic-label-section">
+                                <div class="topic-group-title strong">
+                                    <i data-lucide="smile"></i> Strong Topics
+                                </div>
+                                <div id="strong-topics-cloud" class="tag-cloud">
+                                    <span class="tag-badge strong">No data</span>
+                                </div>
+                            </div>
+                            <div class="topic-label-section">
+                                <div class="topic-group-title weak">
+                                    <i data-lucide="frown"></i> Weak Topics
+                                </div>
+                                <div id="weak-topics-cloud" class="tag-cloud">
+                                    <span class="tag-badge weak">No data</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements panel -->
+                <div class="glass-panel achievements-panel">
+                    <h3 class="topic-group-title" style="color: var(--text-primary);">
+                        <i data-lucide="award" style="color: var(--primary);"></i>
+                        Earned Achievements & Badges
+                    </h3>
+                    <div id="achievements-list-grid" class="achievements-grid">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Complete interviews to unlock career credentials.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== INTERVIEW SETUP VIEW ==================== -->
+            <section id="view-interview" class="view-section">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Start New Interview</h1>
+                        <p style="color: var(--text-secondary); margin-top: 0.25rem;">Configure your preferences to launch the AI interviewer.</p>
+                    </div>
+                </div>
+
+                <div class="setup-grid">
+                    <!-- Form card -->
+                    <div class="glass-panel config-form-card">
+                        <form id="interview-config-form" onsubmit="startInterviewSession(event)">
+                            <div class="form-group">
+                                <label class="form-label">Professional Role Focus</label>
+                                <select id="role-select" class="form-select-pill">
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Frontend Developer">Frontend Developer</option>
+                                    <option value="Backend Developer">Backend Developer</option>
+                                    <option value="Full Stack Developer">Full Stack Developer</option>
+                                    <option value="Python Developer">Python Developer</option>
+                                    <option value="Java Developer">Java Developer</option>
+                                    <option value="React Developer">React Developer</option>
+                                    <option value="Node.js Developer">Node.js Developer</option>
+                                    <option value="Data Analyst">Data Analyst</option>
+                                </select>
+                            </div>
+
+                            <div class="form-row-split">
+                                <div class="form-group">
+                                    <label class="form-label">Difficulty Rating</label>
+                                    <select id="difficulty-select" class="form-select-pill">
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium" selected>Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Evaluation Mode</label>
+                                    <select id="type-select" class="form-select-pill">
+                                        <option value="Technical" selected>Technical Interview</option>
+                                        <option value="Coding">Coding Sandbox Challenge</option>
+                                        <option value="HR">HR & Behavioral</option>
+                                        <option value="Mixed">Mixed Evaluation</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Number of Questions</label>
+                                <select id="count-select" class="form-select-pill">
+                                    <option value="5" selected>5 Questions</option>
+                                    <option value="10">10 Questions</option>
+                                    <option value="20">20 Questions</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="glass-button" style="width: 100%; margin-top: 1.5rem; background: var(--primary-gradient);">
+                                Initialize Session
+                                <i data-lucide="play"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Rules Info Card -->
+                    <div class="glass-panel quick-rules-card">
+                        <div>
+                            <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.75rem;">Platform Evaluator Guidelines</h3>
+                            <p style="font-size:0.85rem; color: var(--text-secondary); line-height: 1.4;">Prepare using these structural instructions before starting the exam.</p>
+                            <div class="rules-list">
+                                <div class="rule-item">
+                                    <i data-lucide="clock" style="color: var(--primary); width:18px; height:18px;"></i>
+                                    <div>
+                                        <strong>Timed Submissions:</strong>
+                                        <span style="display:block; font-size:0.8rem; color:var(--text-muted);">Technical questions have a 5-minute timer. HR questions get 2 minutes. Coding tasks have 20 minutes.</span>
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i data-lucide="mic" style="color: var(--accent-cyan); width:18px; height:18px;"></i>
+                                    <div>
+                                        <strong>Voice Processing:</strong>
+                                        <span style="display:block; font-size:0.8rem; color:var(--text-muted);">You can answer using typing or trigger real-time Voice Speech-to-Text conversion.</span>
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <i data-lucide="terminal" style="color: var(--success); width:18px; height:18px;"></i>
+                                    <div>
+                                        <strong>Code Sandbox Execution:</strong>
+                                        <span style="display:block; font-size:0.8rem; color:var(--text-muted);">Execute script drafts against compile tests directly in the LeetCode console helper.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== ACTIVE INTERVIEW WORKSPACE ==================== -->
+            <section id="view-active-session" class="view-section">
+                <!-- Outer workspace grid dynamically changed via class 'single-pane' -->
+                <div id="interview-workspace-container" class="interview-workspace">
+                    
+                    <!-- Left: Question Panel -->
+                    <div class="glass-panel question-panel">
+                        <div>
+                            <div class="question-status-bar">
+                                <span id="active-question-index" class="badge-label">Question 1 of 5</span>
+                                <div id="countdown-badge" class="timer-badge">
+                                    <i data-lucide="clock"></i>
+                                    <span id="countdown-timer-val">05:00</span>
+                                </div>
+                            </div>
+                            <div id="question-text-el" class="question-body">
+                                Loading AI generated interview question...
+                            </div>
+                        </div>
+
+                        <!-- Interaction controls (TextBox or Voice) -->
+                        <div class="interaction-panel">
+                            <!-- Text Response box -->
+                            <div id="text-response-block" style="display:flex; flex-direction:column; gap:0.5rem;">
+                                <label class="form-label" style="font-weight:600;">Candidate Response</label>
+                                <textarea id="answer-textbox" class="glass-input answer-textarea" placeholder="Type your answer clearly. Support your response with core conceptual examples..."></textarea>
+                            </div>
+
+                            <!-- Voice controller -->
+                            <div id="voice-response-block" class="voice-controls-section">
+                                <div style="text-align:center;">
+                                    <h4 style="font-size:0.95rem; font-weight:700;">Speech-to-Text Input</h4>
+                                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">Toggle mic to transcribe your voice response.</p>
+                                </div>
+                                <div id="mic-trigger-btn" class="mic-orb" onclick="toggleVoiceDictation()">
+                                    <i data-lucide="mic"></i>
+                                </div>
+                                <div class="voice-wave-container">
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                    <div class="wave-bar"></div>
+                                </div>
+                                <div id="voice-transcript-log" class="voice-transcript-preview">
+                                    Microphone inactive. Transcripts will generate here in real-time...
+                                </div>
+                            </div>
+
+                            <!-- Bottom actions -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+                                <button class="glass-button" style="border-color:transparent;" onclick="abortInterviewSession()">
+                                    Abort Session
+                                </button>
+                                <button id="submit-response-btn" class="glass-button" onclick="submitCandidateResponse()" style="background: var(--primary-gradient);">
+                                    Submit Answer
+                                    <i data-lucide="arrow-right-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: LeetCode-style Coding Sandbox (Hidden for HR/Tech) -->
+                    <div id="code-sandbox-pane" class="glass-panel code-sandbox-card" style="display: none;">
+                        <div class="editor-header">
+                            <span class="editor-title">
+                                <i data-lucide="terminal"></i>
+                                <span id="sandbox-lang-label">Python 3</span> Sandbox
+                            </span>
+                            <div style="display:flex; gap:0.5rem; align-items:center;">
+                                <!-- Language Selector -->
+                                <select id="language-selector" class="lang-selector-pill" onchange="onLanguageChange()" title="Select coding language">
+                                    <option value="python" selected>🐍 Python 3</option>
+                                    <option value="javascript">🟨 JavaScript (Node.js)</option>
+                                    <option value="java">☕ Java</option>
+                                    <option value="cpp">⚙️ C++</option>
+                                    <option value="c">🔵 C</option>
+                                </select>
+                                <button class="glass-button" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="runSandboxCode()">
+                                    <i data-lucide="play-circle" style="width:14px; height:14px;"></i>
+                                    Run
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="code-editor" class="code-editor-textarea" spellcheck="false"></textarea>
+                        
+                        <!-- Terminal Console -->
+                        <div class="terminal-console">
+                            <div class="terminal-header" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Terminal / Sandbox Output</span>
+                                <span id="sandbox-stats" style="font-size:0.7rem; color:var(--text-muted);"></span>
+                            </div>
+                            <div id="sandbox-out" class="terminal-output">Select a language and click Run to execute your code against test cases.</div>
+                        </div>
+
+                        <!-- Test Cases Panel (detailed) -->
+                        <div id="test-cases-list-panel" class="test-cases-summary">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ==================== HISTORY VIEW ==================== -->
+            <section id="view-history" class="view-section">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Interview History</h1>
+                        <p style="color: var(--text-secondary); margin-top: 0.25rem;">Review scoring sheets and critiques of all completed sessions.</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 1.5rem; overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date Completed</th>
+                                <th>Role Focus</th>
+                                <th>Difficulty</th>
+                                <th>Type</th>
+                                <th>AI Overall Score</th>
+                                <th>Status</th>
+                                <th>Review</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-rows-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==================== LEADERBOARD VIEW ==================== -->
+            <section id="view-leaderboard" class="view-section">
+                <div class="view-header">
+                    <div>
+                        <h1 class="view-title">Weekly Leaderboard</h1>
+                        <p style="color: var(--text-secondary); margin-top: 0.25rem;">Compare your rank against the highest scoring candidates globally.</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel leaderboard-container">
+                    <h3 style="text-align:center; font-weight:800; margin-bottom:1.5rem;">Top Candidates</h3>
+                    <div id="leaderboard-ranks-list" class="leaderboard-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==================== MODALS & OVERLAYS ==================== -->
+    <div id="feedback-overlay" class="feedback-overlay">
+        <div class="glass-panel feedback-card">
+            <div class="feedback-header">
+                <div>
+                    <h2 id="feedback-panel-header" style="font-size:1.5rem;">AI Response Grade Sheet</h2>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Granular assessment of your response metrics</p>
+                </div>
+                <button class="glass-button" style="padding:0.5rem;" onclick="closeFeedbackModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <!-- Score metrics grid -->
+            <div class="feedback-score-grid">
+                <div class="score-orb-container">
+                    <span id="score-overall" class="score-num perfect">10.0</span>
+                    <span class="score-title">Overall Score</span>
+                </div>
+                <div class="score-orb-container">
+                    <span id="score-technical" class="score-num">9.0</span>
+                    <span class="score-title">Technical Knowledge</span>
+                </div>
+                <div class="score-orb-container">
+                    <span id="score-problem" class="score-num">9.0</span>
+                    <span class="score-title">Problem Solving</span>
+                </div>
+                <div class="score-orb-container">
+                    <span id="score-communication" class="score-num">8.5</span>
+                    <span class="score-title">Communication</span>
+                </div>
+                <div class="score-orb-container">
+                    <span id="score-confidence" class="score-num">8.0</span>
+                    <span class="score-title">Confidence Factor</span>
+                </div>
+            </div>
+
+            <!-- Detailed critique blocks -->
+            <div class="feedback-blocks">
+                <div class="feedback-block-card">
+                    <div class="feedback-block-title">
+                        <i data-lucide="message-square-code"></i> Correct Approach
+                    </div>
+                    <div id="feedback-correct-approach" class="feedback-block-content">
+                        Loading structural concepts...
+                    </div>
+                </div>
+                
+                <div class="feedback-block-card">
+                    <div class="feedback-block-title">
+                        <i data-lucide="check-square"></i> Model Answer Example
+                    </div>
+                    <div id="feedback-better-answer" class="feedback-block-content">
+                        Loading detailed model responses...
+                    </div>
+                </div>
+
+                <div class="feedback-block-card">
+                    <div class="feedback-block-title">
+                        <i data-lucide="activity"></i> Voice Fluency & Grammar
+                    </div>
+                    <div id="feedback-fluency-grammar" class="feedback-block-content">
+                        Grammar and delivery details...
+                    </div>
+                </div>
+
+                <div class="feedback-block-card">
+                    <div class="feedback-block-title">
+                        <i data-lucide="sparkles"></i> Recommendations for Improvement
+                    </div>
+                    <div id="feedback-suggestions" class="feedback-block-content">
+                        Loading feedback insights...
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 1.5rem;">
+                <button id="close-feedback-action-btn" class="glass-button" onclick="closeFeedbackModal()" style="background: var(--primary-gradient);">
+                    Acknowledge & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Scripts -->
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/interview.js"></script>
+    <script src="/static/js/voice.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
