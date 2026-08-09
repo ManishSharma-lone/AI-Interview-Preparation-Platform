@@ -37,7 +37,7 @@ static_dir = os.path.join(frontend_dir, "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
     """Serves the index.html SPA entrypoint."""
     index_path = os.path.join(frontend_dir, "index.html")
