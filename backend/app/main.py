@@ -48,3 +48,9 @@ def read_root():
         "message": "AI Interview Platform API is running. Frontend index.html not found.",
         "api_docs": "/docs"
     }
+
+@app.api_route("/health", methods=["GET", "HEAD"])
+def health_check():
+    """Health check endpoint for cloud platform monitoring."""
+    return {"status": "healthy"}
+

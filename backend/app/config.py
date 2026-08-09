@@ -15,5 +15,6 @@ class Settings(BaseSettings):
         # Load from parent directory (.env is in AI-Interview-Platform root)
         env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
         env_file_encoding = "utf-8"
+        extra = "ignore"
 
 settings = Settings()
