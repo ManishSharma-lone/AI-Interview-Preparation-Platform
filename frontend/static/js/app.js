@@ -1,7 +1,32 @@
 // Core Application Orchestrator
 
+// Mobile Navigation Drawer Toggle Handler
+function toggleMobileSidebar(forceState) {
+    const sidebar = document.getElementById("app-sidebar");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    
+    if (!sidebar || !backdrop) return;
+
+    const shouldOpen = typeof forceState === "boolean" ? forceState : !sidebar.classList.contains("open");
+
+    if (shouldOpen) {
+        sidebar.classList.add("open");
+        backdrop.classList.add("open");
+        document.body.style.overflow = "hidden"; // Disable scroll behind drawer
+    } else {
+        sidebar.classList.remove("open");
+        backdrop.classList.remove("open");
+        document.body.style.overflow = "";
+    }
+}
+
 // Handle Navigation view swaps
 function switchView(viewName) {
+    // Auto close mobile menu when switching views
+    if (window.innerWidth <= 992) {
+        toggleMobileSidebar(false);
+    }
+
     // List of all sections and sidebar items
     const views = ['dashboard', 'interview', 'active-session', 'history', 'leaderboard'];
     
@@ -36,14 +61,26 @@ function switchView(viewName) {
     }
 
     // Refresh Lucide Icons in case new elements are injected
-    lucide.createIcons();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 }
 
 // App Initialization entrypoint
 document.addEventListener("DOMContentLoaded", () => {
     // Render initial icons
-    lucide.createIcons();
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 
     // Check session states
     checkStoredSession();
+
+    // Auto-reset mobile sidebar on resize to desktop
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 992) {
+            toggleMobileSidebar(false);
+        }
+    });
 });
+

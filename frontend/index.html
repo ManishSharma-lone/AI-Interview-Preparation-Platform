@@ -69,11 +69,30 @@
     <!-- ==================== MAIN APPLICATION APP SHELL ==================== -->
     <div id="app-shell" class="app-shell" style="display: none;">
         
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">
+        <!-- Mobile Top Header Bar (Visible on <= 992px) -->
+        <header class="mobile-top-bar">
+            <div class="mobile-brand">
                 <i data-lucide="terminal" style="color: var(--primary);"></i>
-                AI-Interviewer
+                <span>AI-Interviewer</span>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Toggle Navigation Menu">
+                <i data-lucide="menu" id="mobile-menu-icon"></i>
+            </button>
+        </header>
+
+        <!-- Sidebar Overlay Backdrop for Mobile -->
+        <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleMobileSidebar(false)"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside id="app-sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i data-lucide="terminal" style="color: var(--primary);"></i>
+                    AI-Interviewer
+                </div>
+                <button class="sidebar-close-btn" onclick="toggleMobileSidebar(false)" aria-label="Close Sidebar">
+                    <i data-lucide="x"></i>
+                </button>
             </div>
             
             <nav class="nav-menu">
