@@ -4,18 +4,25 @@
 function toggleMobileSidebar(forceState) {
     const sidebar = document.getElementById("app-sidebar");
     const backdrop = document.getElementById("sidebar-backdrop");
-    
-    if (!sidebar || !backdrop) return;
 
-    const shouldOpen = typeof forceState === "boolean" ? forceState : !sidebar.classList.contains("open");
+    if (!sidebar || !backdrop) {
+        console.warn("toggleMobileSidebar: sidebar or backdrop element not found");
+        return;
+    }
+
+    // Determine target state
+    const isCurrentlyOpen = sidebar.getAttribute("data-open") === "true";
+    const shouldOpen = typeof forceState === "boolean" ? forceState : !isCurrentlyOpen;
 
     if (shouldOpen) {
         sidebar.classList.add("open");
         backdrop.classList.add("open");
-        document.body.style.overflow = "hidden"; // Disable scroll behind drawer
+        sidebar.setAttribute("data-open", "true");
+        document.body.style.overflow = "hidden"; // Prevent scroll behind drawer
     } else {
         sidebar.classList.remove("open");
         backdrop.classList.remove("open");
+        sidebar.setAttribute("data-open", "false");
         document.body.style.overflow = "";
     }
 }
@@ -29,11 +36,11 @@ function switchView(viewName) {
 
     // List of all sections and sidebar items
     const views = ['dashboard', 'interview', 'active-session', 'history', 'leaderboard'];
-    
+
     views.forEach(v => {
         const section = document.getElementById(`view-${v}`);
         const navItem = document.getElementById(`nav-${v}`);
-        
+
         if (section) {
             if (v === viewName) {
                 section.classList.add("active");
@@ -83,4 +90,3 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-

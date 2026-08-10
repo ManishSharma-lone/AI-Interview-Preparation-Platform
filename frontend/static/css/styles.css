@@ -197,7 +197,8 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 1.25rem;
     align-items: center;
     justify-content: space-between;
-    z-index: 900;
+    /* MUST be above sidebar (1100) and backdrop (1000) */
+    z-index: 1200;
 }
 
 .mobile-brand {
@@ -232,6 +233,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-backdrop {
+    /* Hidden by default — shown via display:block in @media (max-width: 992px) */
     display: none;
     position: fixed;
     top: 0;
@@ -241,7 +243,8 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    z-index: 950;
+    /* Below sidebar (1100) but above content; also BELOW mobile-top-bar (1200) */
+    z-index: 1000;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -265,8 +268,9 @@ h1, h2, h3, h4, h5, h6 {
     -webkit-backdrop-filter: blur(16px);
     display: flex;
     flex-direction: column;
-    z-index: 1000;
-    transition: transform var(--transition-speed) ease, left var(--transition-speed) ease;
+    /* Above backdrop (1000) but below mobile top bar (1200) */
+    z-index: 1100;
+    transition: left var(--transition-speed) ease;
 }
 
 .sidebar-header {
@@ -1317,15 +1321,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-/* Ensure mobile top bar appears above all content */
-.mobile-top-bar {
-    z-index: 1100;
-}
-
-/* Ensure sidebar backdrop covers full viewport and sits above content */
-.sidebar-backdrop {
-    z-index: 1050;
-}
+/* z-index hierarchy is set in each component's base rule above — no overrides needed here */
 
 
 /* ==========================================================================
@@ -1378,7 +1374,7 @@ h1, h2, h3, h4, h5, h6 {
         width: 280px;
         top: 0;
         bottom: 0;
-        z-index: 1000;
+        /* z-index already set in base rule (1100) — do NOT override here */
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
     }
 
